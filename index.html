@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>ZEBA NOOR · Hand Embroidery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: #f5f2ef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .app-card {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background: #ffffff;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: none;
+        }
+
+        @media (min-width: 421px) {
+            .app-card {
+                border-radius: 32px;
+                height: 96vh;
+                max-height: 820px;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            }
+        }
+
+        #splashScreen {
+            position: relative;
+            width: 100%;
+            flex: 1 0 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+            overflow: hidden;
+            min-height: 100%;
+        }
+
+        #splashScreen .splash-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #f5f0ec;
+            background-size: cover;
+            background-position: center;
+        }
+
+        #splashScreen.hide-splash {
+            opacity: 0;
+            pointer-events: none;
+            flex: 0 0 0;
+            min-height: 0;
+            height: 0;
+            transition: opacity 0.4s ease, flex 0.1s 0.4s, height 0.1s 0.4s, min-height 0.1s 0.4s;
+        }
+
+        #mainApp {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            background: #ffffff;
+            padding: 14px 16px 18px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        #mainApp.active {
+            display: flex;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0ebe7;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-header h2 {
+            font-family: 'Georgia', serif;
+            font-size: 1.5rem;
+            color: #3a2820;
+            letter-spacing: 1px;
+        }
+
+        .brand-header span {
+            font-size: 0.65rem;
+            background: #f3eeea;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #4f372b;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0 14px;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 6px;
+            border: none;
+            background: #f5f0ec;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4d3529;
+            transition: 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn i { font-size: 0.9rem; }
+
+        .tab-btn.active {
+            background: #e63946;
+            color: white;
+            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.25);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeUp 0.2s ease;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        .tab-pane.active { display: block; }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            padding: 4px 0 10px;
+            border-bottom: 1px solid #f0ebe7;
+            margin-bottom: 14px;
+            font-size: 0.7rem;
+            color: #4d372b;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .filter-row span {
+            background: #f5f0ec;
+            padding: 4px 14px;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-row i {
+            margin-right: 4px;
+            color: #8b6b59;
+        }
+
+        .design-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 2px;
+            padding-bottom: 8px;
+        }
+
+        .design-card {
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #f0ebe7;
+            padding-bottom: 10px;
+            transition: 0.1s;
+        }
+
+        .design-card img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            background: #f0ebe7;
+            display: block;
+        }
+
+        .design-info {
+            padding: 8px 10px 4px;
+        }
+
+        .design-info .title {
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #000000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .design-info .title .badge {
+            background: #d0b9ab;
+            color: white;
+            font-size: 0.5rem;
+            padding: 2px 8px;
+            border-radius: 30px;
+            flex-shrink: 0;
+        }
+
+        .design-info .price-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 4px 0 6px;
+            flex-wrap: wrap;
+        }
+
+        .design-info .price-row .current {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1f130e;
+        }
+
+        .design-info .price-row .original {
+            font-size: 0.65rem;
+            color: #8f786a;
+            text-decoration: line-through;
+        }
+
+        .design-info .price-row .save {
+            background: #e8d3c7;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #562f1e;
+        }
+
+        .design-info .cloth-tag {
+            font-size: 0.55rem;
+            color: #6d5242;
+            background: #f5f0ec;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            margin-top: 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            margin: 8px 10px 0;
+        }
+
+        .action-buttons a {
+            flex: 1;
+            text-decoration: none;
+            padding: 6px 0;
+            border-radius: 60px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border: 1px solid transparent;
+            transition: 0.1s;
+            color: white;
+        }
+
+        .action-buttons a.whatsapp {
+            background: #25D366;
+            border-color: #25D366;
+        }
+        .action-buttons a.whatsapp i { color: white; }
+
+        .action-buttons a.instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            border-color: transparent;
+        }
+        .action-buttons a.instagram i { color: white; }
+
+        .action-buttons a:hover {
+            opacity: 0.85;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            background: #f7f2ee;
+            border-radius: 60px;
+            padding: 28px 10px;
+            text-align: center;
+            color: #805f4b;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        .admin-login {
+            background: #f7f2ee;
+            border-radius: 36px;
+            padding: 20px 16px;
+            margin: 8px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #e7ddd6;
+        }
+
+        .admin-login .input-group {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 60px;
+            padding: 4px 8px 4px 18px;
+            border: 1px solid #dccbc2;
+        }
+
+        .admin-login .input-group i { color: #a78471; margin-right: 8px; }
+        .admin-login .input-group input {
+            border: none;
+            padding: 12px 0;
+            flex: 1;
+            background: transparent;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .admin-login .login-btn {
+            background: #e63946;
+            border: none;
+            padding: 12px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .admin-panel {
+            background: #faf7f5;
+            border-radius: 28px;
+            padding: 14px 12px;
+            margin-top: 12px;
+            border: 1px solid #eadad2;
+        }
+
+        .admin-panel h4 {
+            color: #432f25;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .upload-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .upload-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid #e0cec4;
+            gap: 6px;
+        }
+
+        .upload-row input, .upload-row select {
+            border: 1px solid #dccbc2;
+            border-radius: 60px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            background: #fcf9f7;
+            flex: 1 0 70px;
+            outline: none;
+        }
+
+        .upload-row .file-input { flex: 1 0 90px; }
+        .upload-row .title-input { flex: 1 0 80px; }
+        .upload-row .price-input { flex: 0 0 80px; }
+        .upload-row .cloth-input { flex: 1 0 80px; }
+
+        .upload-btn {
+            background: #e63946;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .upload-btn:hover { background: #c5313d; }
+
+        .upload-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .admin-design-list {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 12px;
+        }
+
+        .admin-design-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 24px;
+            padding: 10px 12px;
+            border: 1px solid #efe1d9;
+            gap: 10px;
+        }
+
+        .admin-design-item img {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: #e0cec4;
+        }
+
+        .admin-design-item .info {
+            flex: 1;
+            font-size: 0.8rem;
+        }
+
+        .admin-design-item .info .title-text {
+            font-weight: 600;
+            color: #000000;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .admin-design-item .info .price { font-weight: 600; color: #2f1d14; }
+        .admin-design-item .info .cloth { color: #6d5242; font-size: 0.7rem; }
+
+        .admin-design-item .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .admin-design-item .actions button {
+            border: none;
+            background: #f0e4dd;
+            border-radius: 40px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .admin-design-item .actions .edit-btn { background: #e5d5cb; color: #3b281f; }
+        .admin-design-item .actions .delete-btn { background: #f5d8d0; color: #883d2a; }
+
+        .admin-note {
+            font-size: 0.7rem;
+            color: #9c7f6e;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .customer-scroll {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding-bottom: 8px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 0;
+            color: #8f786a;
+            font-size: 0.9rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success { background: #25D366; }
+        .toast.error { background: #e63946; }
+
+        .upload-progress {
+            width: 100%;
+            height: 4px;
+            background: #f0ebe7;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress.show {
+            display: block;
+        }
+
+        .upload-progress .progress-bar {
+            height: 100%;
+            background: #25D366;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 400px) {
+            .design-grid { gap: 10px; }
+            .brand-header h2 { font-size: 1.3rem; }
+            .tab-btn { font-size: 0.8rem; padding: 8px 4px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-card">
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen">
+        <img id="splashImage" class="splash-bg" src="https://i.postimg.cc/C11StsT0/IMG-20260624-WA0086.jpg" alt="ZEBA NOOR" />
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp">
+        <div class="brand-header">
+            <h2>ZEBA NOOR</h2>
+            <span><i class="fas fa-stitch"></i> handcrafted</span>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="customerTab"><i class="fas fa-user"></i> Customer</button>
+            <button class="tab-btn" data-tab="adminTab"><i class="fas fa-user-shield"></i> Admin</button>
+        </div>
+
+        <!-- Customer Tab -->
+        <div id="customerTab" class="tab-pane active customer-tab">
+            <div class="filter-row">
+                <span><i class="fas fa-tshirt"></i> PRINTED</span>
+                <span><i class="fas fa-embroidery"></i> EMBROIDERED</span>
+                <span><i class="fas fa-filter"></i> FILTER</span>
+                <span><i class="fas fa-sort"></i> SORT BY</span>
+            </div>
+            <div class="customer-scroll">
+                <div id="customerDesigns" class="design-grid">
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading designs...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tab -->
+        <div id="adminTab" class="tab-pane">
+            <div class="admin-login" id="adminLoginBox">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" />
+                </div>
+                <button class="login-btn" id="adminLoginBtn"><i class="fas fa-sign-in-alt"></i> Unlock admin</button>
+            </div>
+
+            <div id="adminPanel" style="display:none;">
+                <div class="admin-panel">
+                    <h4><i class="fas fa-cloud-upload-alt"></i> Upload designs (max 10)</h4>
+                    <div class="upload-grid" id="uploadGrid"></div>
+                    
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <button class="upload-btn" id="uploadDesignsBtn"><i class="fas fa-save"></i> Upload all to database</button>
+                    <div class="admin-note"><i class="fas fa-info-circle"></i> Images are compressed to ~100KB</div>
+                </div>
+
+                <div style="margin-top: 18px;">
+                    <h4 style="color:#432f25; display:flex; gap:8px; align-items:center; font-size:0.95rem; margin-bottom:10px;">
+                        <i class="fas fa-list-ul"></i> Manage uploaded designs
+                    </h4>
+                    <div id="adminDesignList" class="admin-design-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    // ----- FIREBASE REALTIME DATABASE CONFIGURATION -----
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+    import { 
+        getDatabase, 
+        ref, 
+        push, 
+        set, 
+        onValue, 
+        remove, 
+        update,
+        get
+    } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDSmPnz4mt8YWDXLsoB_zsZS0Fg2ek_yFA",
+        authDomain: "zeba-noor-boutique.firebaseapp.com",
+        projectId: "zeba-noor-boutique",
+        storageBucket: "zeba-noor-boutique.firebasestorage.app",
+        messagingSenderId: "268870398012",
+        appId: "1:268870398012:web:ecd7ba6e1f9029eda11339",
+        measurementId: "G-0Y3L25E75V",
+        databaseURL: "https://zeba-noor-boutique-default-rtdb.firebaseio.com" // Your Realtime Database URL
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    // ----- Toast Notification -----
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // ----- Data Store -----
+    let designs = [];
+    let isAdminLoggedIn = false;
+    let isLoading = false;
+
+    // ----- DOM Elements -----
+    const splashEl = document.getElementById('splashScreen');
+    const mainApp = document.getElementById('mainApp');
+    const customerGrid = document.getElementById('customerDesigns');
+    const adminDesignList = document.getElementById('adminDesignList');
+    const adminLoginBox = document.getElementById('adminLoginBox');
+    const adminPanel = document.getElementById('adminPanel');
+    const adminPassInput = document.getElementById('adminPassword');
+    const loginBtn = document.getElementById('adminLoginBtn');
+    const uploadGrid = document.getElementById('uploadGrid');
+    const uploadBtn = document.getElementById('uploadDesignsBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressContainer = document.getElementById('uploadProgress');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+
+    // ----- Splash Screen -----
+    setTimeout(() => {
+        splashEl.classList.add('hide-splash');
+        mainApp.classList.add('active');
+        loadDesignsFromDatabase();
+    }, 6000);
+
+    // ----- Tab Switching -----
+    const panes = {
+        customer: document.getElementById('customerTab'),
+        admin: document.getElementById('adminTab')
+    };
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            Object.values(panes).forEach(p => p.classList.remove('active'));
+            if (tabId === 'customerTab') {
+                panes.customer.classList.add('active');
+                loadDesignsFromDatabase();
+            } else if (tabId === 'adminTab') {
+                panes.admin.classList.add('active');
+                if (isAdminLoggedIn) {
+                    adminLoginBox.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                    if (uploadGrid.children.length === 0) generateUploadRows();
+                    loadDesignsFromDatabase();
+                } else {
+                    adminLoginBox.style.display = 'flex';
+                    adminPanel.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    // ----- Admin Login -----
+    loginBtn.addEventListener('click', function() {
+        const password = adminPassInput.value.trim();
+        if (password === 'zeba1122') {
+            isAdminLoggedIn = true;
+            adminLoginBox.style.display = 'none';
+            adminPanel.style.display = 'block';
+            if (uploadGrid.children.length === 0) generateUploadRows();
+            loadDesignsFromDatabase();
+            showToast('✅ Admin access granted!', 'success');
+        } else {
+            showToast('❌ Incorrect password.', 'error');
+            adminPassInput.value = '';
+            adminPassInput.focus();
+        }
+    });
+
+    // ----- Generate Upload Rows -----
+    function generateUploadRows() {
+        uploadGrid.innerHTML = '';
+        for (let i = 0; i < 10; i++) {
+            const row = document.createElement('div');
+            row.className = 'upload-row';
+            row.innerHTML = `
+                <input type="file" accept="image/*" class="file-input" data-index="${i}">
+                <input type="text" placeholder="Title" class="title-input" data-index="${i}">
+                <input type="text" placeholder="Price (e.g. 5,995)" class="price-input" data-index="${i}">
+                <input type="text" placeholder="Cloth (e.g. Cotton)" class="cloth-input" data-index="${i}">
+            `;
+            uploadGrid.appendChild(row);
+        }
+    }
+
+    // ----- COMPRESS IMAGE -----
+    function compressImage(file, maxSizeKB = 150) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let quality = 0.8;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    const maxDim = 500;
+                    if (width > maxDim) {
+                        height = (height * maxDim) / width;
+                        width = maxDim;
+                    }
+                    if (height > maxDim) {
+                        width = (width * maxDim) / height;
+                        height = maxDim;
+                    }
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    let sizeInKB = (dataUrl.length * 3/4) / 1024;
+                    
+                    let attempts = 0;
+                    while (sizeInKB > maxSizeKB && attempts < 10 && quality > 0.1) {
+                        quality -= 0.05;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        sizeInKB = (dataUrl.length * 3/4) / 1024;
+                        attempts++;
+                    }
+                    
+                    console.log(`Image compressed: ${sizeInKB.toFixed(0)}KB`);
+                    resolve(dataUrl);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ----- LOAD DESIGNS FROM REALTIME DATABASE -----
+    function loadDesignsFromDatabase() {
+        if (isLoading) return;
+        isLoading = true;
+        
+        const designsRef = ref(db, 'designs');
+        
+        onValue(designsRef, (snapshot) => {
+            const data = snapshot.val();
+            designs = [];
+            
+            if (data) {
+                // Convert object to array with IDs
+                designs = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                }));
+                
+                // Sort by createdAt (newest first)
+                designs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            }
+            
+            console.log(`Loaded ${designs.length} designs from Realtime Database`);
+            renderCustomerGrid();
+            renderAdminDesignList();
+            isLoading = false;
+        }, (error) => {
+            console.error('Error loading designs:', error);
+            showToast('❌ Failed to load designs: ' + error.message, 'error');
+            customerGrid.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i> Error: ${error.message}</div>`;
+            isLoading = false;
+        });
+    }
+
+    // ----- UPLOAD DESIGNS TO REALTIME DATABASE -----
+    uploadBtn.addEventListener('click', async function() {
+        const rows = uploadGrid.querySelectorAll('.upload-row');
+        let uploadPromises = [];
+        let hasFile = false;
+        let totalFiles = 0;
+        let completedFiles = 0;
+
+        rows.forEach((row) => {
+            const fileInput = row.querySelector('.file-input');
+            if (fileInput.files[0]) {
+                totalFiles++;
+                hasFile = true;
+            }
+        });
+
+        if (!hasFile) {
+            showToast('Please select at least one image.', 'error');
+            return;
+        }
+
+        progressContainer.classList.add('show');
+        progressBar.style.width = '0%';
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Compressing & Uploading...';
+
+        rows.forEach((row) => {
+            const fileInput = row.querySelector('.file-input');
+            const titleInput = row.querySelector('.title-input');
+            const priceInput = row.querySelector('.price-input');
+            const clothInput = row.querySelector('.cloth-input');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const promise = (async () => {
+                    try {
+                        const compressedImage = await compressImage(file, 150);
+                        
+                        const designData = {
+                            title: titleInput.value.trim() || '3-PIECE EMBROIDERED',
+                            price: priceInput.value.trim() || '5,995',
+                            cloth: clothInput.value.trim() || 'Cotton',
+                            image_url: compressedImage,
+                            createdAt: Date.now()
+                        };
+                        
+                        // Push to Realtime Database
+                        const designsRef = ref(db, 'designs');
+                        const newDesignRef = push(designsRef);
+                        await set(newDesignRef, designData);
+                        
+                        completedFiles++;
+                        const progress = (completedFiles / totalFiles) * 100;
+                        progressBar.style.width = `${progress}%`;
+                        
+                        return { success: true };
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                        return { success: false, error: error.message };
+                    }
+                })();
+                uploadPromises.push(promise);
+            }
+        });
+
+        const results = await Promise.all(uploadPromises);
+        const successCount = results.filter(r => r.success).length;
+        
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-save"></i> Upload all to database';
+
+        setTimeout(() => {
+            progressContainer.classList.remove('show');
+            progressBar.style.width = '0%';
+        }, 2000);
+
+        if (successCount > 0) {
+            showToast(`✅ ${successCount} design(s) uploaded successfully!`, 'success');
+            rows.forEach(r => {
+                r.querySelector('.file-input').value = '';
+                r.querySelector('.title-input').value = '';
+                r.querySelector('.price-input').value = '';
+                r.querySelector('.cloth-input').value = '';
+            });
+            // Data will reload automatically via onValue listener
+        } else {
+            showToast('❌ Upload failed. Check console for errors.', 'error');
+        }
+    });
+
+    // ----- Render Customer Grid -----
+    function renderCustomerGrid() {
+        customerGrid.innerHTML = '';
+        if (!designs || designs.length === 0) {
+            customerGrid.innerHTML = `<div class="empty-state"><i class="fas fa-embroidery"></i> No designs available. Admin will upload soon.</div>`;
+            return;
+        }
+
+        designs.forEach((d) => {
+            const card = document.createElement('div');
+            card.className = 'design-card';
+            const imgSrc = d.image_url || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23f0ebe7%22/%3E%3Ctext x=%2220%22 y=%22120%22 font-size=%2230%22 fill=%22%23947766%22%3E🌿%3C/text%3E%3C/svg%3E';
+            const price = d.price || '5,995';
+            const originalPrice = Math.round(parseInt(price.replace(/,/g,'')) * 2);
+            const formattedOriginal = originalPrice.toLocaleString();
+            const titleText = d.title || '3-PIECE EMBROIDERED';
+            
+            card.innerHTML = `
+                <img src="${imgSrc}" alt="design" loading="lazy">
+                <div class="design-info">
+                    <div class="title">
+                        <span>${titleText}</span>
+                        <span class="badge">READY TO WEAR</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="current">RS. ${price}</span>
+                        <span class="original">RS. ${formattedOriginal}</span>
+                        <span class="save">SAVE 50%</span>
+                    </div>
+                    <span class="cloth-tag"><i class="fas fa-tshirt"></i> ${d.cloth || 'Cotton'}</span>
+                </div>
+                <div class="action-buttons">
+                    <a href="#" class="whatsapp" data-wa="+923463023211"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a href="#" class="instagram" data-ig="https://www.instagram.com/zeba_noor_boutique?igsh=MXR3NHlqdXVnNDk3Mg=="><i class="fab fa-instagram"></i> Instagram</a>
+                </div>
+            `;
+            customerGrid.appendChild(card);
+
+            card.querySelector('.whatsapp').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open(`https://wa.me/${e.currentTarget.dataset.wa}`, '_blank');
+            });
+            card.querySelector('.instagram').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open(e.currentTarget.dataset.ig, '_blank');
+            });
+        });
+    }
+
+    // ----- Render Admin Design List -----
+    function renderAdminDesignList() {
+        adminDesignList.innerHTML = '';
+        if (!designs || designs.length === 0) {
+            adminDesignList.innerHTML = `<div style="padding:20px;text-align:center;color:#8f786a;font-size:0.85rem;">No designs uploaded yet.</div>`;
+            return;
+        }
+
+        designs.forEach((d) => {
+            const item = document.createElement('div');
+            item.className = 'admin-design-item';
+            item.dataset.id = d.id;
+            const imgSrc = d.image_url || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23f0ebe7%22/%3E%3Ctext x=%2220%22 y=%22120%22 font-size=%2230%22 fill=%22%23947766%22%3E🌿%3C/text%3E%3C/svg%3E';
+            
+            item.innerHTML = `
+                <img src="${imgSrc}" alt="design" loading="lazy">
+                <div class="info">
+                    <div class="title-text">${d.title || '3-PIECE EMBROIDERED'}</div>
+                    <div class="price">RS. ${d.price || '5,995'}</div>
+                    <div class="cloth">${d.cloth || 'Cotton'}</div>
+                </div>
+                <div class="actions">
+                    <button class="edit-btn" data-id="${d.id}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="delete-btn" data-id="${d.id}"><i class="fas fa-trash"></i> Del</button>
+                </div>
+            `;
+            adminDesignList.appendChild(item);
+
+            // Delete from Realtime Database
+            item.querySelector('.delete-btn').addEventListener('click', async function() {
+                const id = this.dataset.id;
+                if (confirm('Are you sure you want to delete this design?')) {
+                    try {
+                        await remove(ref(db, `designs/${id}`));
+                        showToast('✅ Design deleted successfully!', 'success');
+                        // Data will reload automatically via onValue listener
+                    } catch (error) {
+                        console.error('Delete error:', error);
+                        showToast('❌ Delete failed: ' + error.message, 'error');
+                    }
+                }
+            });
+
+            // Edit in Realtime Database
+            item.querySelector('.edit-btn').addEventListener('click', async function() {
+                const id = this.dataset.id;
+                const design = designs.find(d => d.id === id);
+                if (!design) return;
+                
+                const newTitle = prompt('Edit Title:', design.title || '3-PIECE EMBROIDERED');
+                const newPrice = prompt('Edit Price:', design.price);
+                const newCloth = prompt('Edit Cloth type:', design.cloth);
+                
+                if (newTitle !== null || newPrice !== null || newCloth !== null) {
+                    const updateData = {};
+                    if (newTitle !== null) updateData.title = newTitle.trim() || design.title;
+                    if (newPrice !== null) updateData.price = newPrice.trim() || design.price;
+                    if (newCloth !== null) updateData.cloth = newCloth.trim() || design.cloth;
+                    
+                    try {
+                        await update(ref(db, `designs/${id}`), updateData);
+                        showToast('✅ Design updated successfully!', 'success');
+                        // Data will reload automatically via onValue listener
+                    } catch (error) {
+                        console.error('Update error:', error);
+                        showToast('❌ Update failed: ' + error.message, 'error');
+                    }
+                }
+            });
+        });
+    }
+
+    // ----- Auto-generate upload rows on admin unlock -----
+    loginBtn.addEventListener('click', function() {
+        if (adminPassInput.value.trim() === 'zeba1122') {
+            setTimeout(() => {
+                if (uploadGrid.children.length === 0) generateUploadRows();
+            }, 50);
+        }
+    });
+</script>
+</body>
+</html>
